@@ -30,7 +30,8 @@ public class EmployeeEntity {
 	String lastName;
 	String email;
 	String password;
-
+	String token; 
+	
 	LocalDate createdAt;
 	
 	public EmployeeEntity() {
