@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.entity.EmployeeEntity;
@@ -43,11 +44,11 @@ public class EmployeeController {
 
 		// validation
 		if (result.hasErrors()) {
-			HashMap<String, String> errorMap = new HashMap<>(); 
-			
-			 for(FieldError f: result.getFieldErrors()) {
-				 errorMap.put(f.getField(), f.getDefaultMessage());
-			 }
+			HashMap<String, String> errorMap = new HashMap<>();
+
+			for (FieldError f : result.getFieldErrors()) {
+				errorMap.put(f.getField(), f.getDefaultMessage());
+			}
 			map.put("errors", errorMap);
 			map.put("data", employeeEntity);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
@@ -60,7 +61,7 @@ public class EmployeeController {
 		Optional<EmployeeEntity> op = employeeRepository.findByEmail(employeeEntity.getEmail());
 		if (op.isPresent()) {
 			map.put("data", employeeEntity);
-	 
+
 			Map<String, Object> errorMap = new HashMap<>();
 			errorMap.put("email", "Duplicate Email");
 			map.put("errors", errorMap);
@@ -82,9 +83,25 @@ public class EmployeeController {
 	// get all employee
 
 	@GetMapping("/employees")
-	public List<EmployeeEntity> getAllEmployees() {
-		List<EmployeeEntity> employees = employeeRepository.findAll();
-		return employees;
+	public ResponseEntity<?> getAllEmployees(@RequestHeader String token) {
+
+		// token
+		System.out.println(token);
+
+		Optional<EmployeeEntity> db = employeeRepository.findByToken(token);
+
+		if (db.isPresent()) {
+			List<EmployeeEntity> employees = employeeRepository.findAll();
+			return ResponseEntity.ok(employees);
+		} else {
+			HashMap<String, String> map = new HashMap<>();
+			
+			map.put("token", token);
+			map.put("msg", "Invalid token");
+			
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
+
+		}
 	}
 
 	// remove employee by employeeId

@@ -10,12 +10,14 @@ import com.entity.EmployeeEntity;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity, UUID> {
-	//findByXXX();  // XXX => any field of EmployeeEntity 
-	
+	// findByXXX(); // XXX => any field of EmployeeEntity
+
 	Optional<EmployeeEntity> findByEmail(String email);
+
 	Optional<EmployeeEntity> findByFirstName(String firstName);
-	Optional<EmployeeEntity> findByFirstNameAndLastName(String firstName,String lastName);
-	
-	
-	
+
+	Optional<EmployeeEntity> findByFirstNameAndLastName(String firstName, String lastName);
+
+	Optional<EmployeeEntity> findByToken(String token);
+
 }
