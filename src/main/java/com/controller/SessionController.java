@@ -12,36 +12,40 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.entity.EmployeeEntity;
 import com.repository.EmployeeRepository;
+import com.util.JwtUtil;
 
 @RestController
 @RequestMapping("/public")
 public class SessionController {
- 
-	
+
 	@Autowired
-	EmployeeRepository employeeRepository; 
-	
+	JwtUtil jwt;
+
+	@Autowired
+	EmployeeRepository employeeRepository;
+
 	String data = "0123456789qwertyuioplkjhgfdsazxcvbnmPOIUYTREWQASDFGHJKLMNBVCXZ";
+
 	@PostMapping("login")
 	public ResponseEntity<?> login(@RequestBody EmployeeEntity employeeEntity) {
-		StringBuffer sb = new StringBuffer(); 
+		StringBuffer sb = new StringBuffer();
 
 		Optional<EmployeeEntity> op = employeeRepository.findByEmail(employeeEntity.getEmail());
-		if(op.isEmpty()) {
+		if (op.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(employeeEntity);
 		}
-		EmployeeEntity db = op.get(); 
-		
-		for(int i=1;i<=32;i++) {
-			int index = (int)(Math.random()*data.length()); //0-61 
-			sb.append(data.charAt(index)); 
-		} 
-		
-		String token = sb.toString(); 
-		
+		EmployeeEntity db = op.get();
+
+//		for(int i=1;i<=32;i++) {
+//			int index = (int)(Math.random()*data.length()); //0-61 
+//			sb.append(data.charAt(index)); 
+//		} 
+
+		String token = jwt.generateToken(employeeEntity.getEmail());
+
 		db.setToken(token);
-		employeeRepository.save(db); //update -> token  
-		//email and password correct 
+//		employeeRepository.save(db); //update -> token  
+		// email and password correct
 		return ResponseEntity.status(HttpStatus.OK).body(db);
 	}
 
