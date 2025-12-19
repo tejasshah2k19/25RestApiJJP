@@ -19,8 +19,8 @@ public class JwtUtil {
 		return Keys.hmacShaKeyFor(SECRET.getBytes());
 	}
 
-	public String generateToken(String username) {
-		return Jwts.builder().setSubject(username).setIssuedAt(new Date())
+	public String generateToken(String email) {
+		return Jwts.builder().setSubject(email).setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
 				.signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
 	}
